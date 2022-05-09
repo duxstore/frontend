@@ -13,6 +13,11 @@ const ProductService = {
   async getById(id) {
     return await Products.where('id', id).get()
   },
+
+  create(data) {
+    const product = new Products(data)
+    return product.save()
+  }
 }
 
 export default ProductService

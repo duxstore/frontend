@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import money from '../config/money'
+import naira from '../config/money'
 
 Vue.filter('money', function (value) {
-  return money.format(value)
+  return naira.format(value)
 })

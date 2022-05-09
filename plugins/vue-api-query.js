@@ -6,14 +6,11 @@ import { Model } from 'vue-api-query'
  * this is so that all our requests can be
  * scoped to the store that we're logged into
  */
-export default function ({ $auth, $axios }) {
-  if (!$auth.loggedIn) {
-    return
+export default function ({ $auth, $axios}, inject) {
+  if ($auth.loggedIn) {
+    Model.$http = $axios
+    Model.$baseURL = $axios.defaults.baseURL + '/store/' +   $auth.$storage.getUniversal('store')
+  } else {
+    $auth.logout() // endusre user is logged out
   }
-
-
-  // eslint-disable-next-line no-console
-  // console.log(process.env.API_URL, process.env.apiUrl, $axios.defaults.baseURL, $axios)
-  Model.$http = $axios
-  Model.$baseURL = $axios.defaults.baseURL + '/store/' +   $auth.$storage.getUniversal('store')
 }

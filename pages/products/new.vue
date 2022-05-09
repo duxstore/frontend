@@ -196,9 +196,6 @@
               <label for="stock" class="font-bold cursor-pointer"
                 >Quantity</label
               >
-              <small v-if="newQuantity" class="text-muted"
-                >Adding {{ newQuantity }} items to stock</small
-              >
               <input
                 id="stock"
                 v-model="form.stock"
@@ -215,7 +212,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-// import ProductService from '@/services/ProductService.js'
+import ProductService from '@/services/ProductService.js'
 import Variation from '@/components/Product/Variation.vue'
 import FileUploader from '@/components/Product/FileUploader.vue'
 // import Form from '@/helpers/Form'
@@ -248,26 +245,25 @@ export default {
       showVariation: false,
     }
   },
+  async fetch() {
+    const { id } = await ProductService.create({step: 'init'})
+    this.form.productId = id
+  },
   computed: {
     uploadEndpoint () {
       return `${this.$storeUrl}/products/${this.form.productId}/media`
     },
     ...mapState('collection', ['collections']),
-    ...mapGetters('product', ['productError', 'product', 'variations', 'inventory']),
-    newQuantity() {
-      if (this.product?.stock && this.form.stock > this.product.stock)
-        return parseInt(this.form.stock) - parseInt(this.product.stock)
-      else return false
-    },
-    productId() {
-      return this.product.id
-    }
+    ...mapGetters('product', ['productError', 'product', 'variations'])
   },
-  mounted() {
+  async mounted() {
     // load all categories
     this.$store.dispatch('collection/index')
-    // get product using params.id
-    this.getProduct()
+
+    if (!this.form.productId) {
+      const { id } = await ProductService.create({step: 'init'})
+      this.form.productId = id
+    }
   },
   beforeDestroy() {
     // Empty our variation data so it's not carried over to other products
@@ -276,7 +272,7 @@ export default {
   },
   methods: {
     handleUrl (url) {
-      this.$store.commit('product/setProductMedia', url)
+      this.form.media_library.push(url)
     },
     save () {
       this.form.variation = {}
@@ -290,60 +286,21 @@ export default {
           title: 'Your product was updated successfully',
           text: `Your collection ${this.form.name} has been created successfully`
         })
-        // eslint-disable-next-line no-console
-        console.log('results from saving ', result)
+
+        if(this.product.id) {
+          this.$router.push({ name: 'product-single', params: {id: this.form.productId }})
+        }
       }).catch((err) => {
         // eslint-disable-next-line no-console
         console.error(err)
       });
-    },
-    /**
-     * Not using fetch() because we can't access
-     * the global variables we've set inside fetch
-     */
-    async getProduct() {
-      const { data } = await this.$axios.get(`${this.$storeUrl}/products/id/${this.$route.params.id}`)
-      this.$store.commit('product/setProduct', data)
-      this.form.productId = this.product.id
-      this.form.status = this.product.status
-      this.form.name = this.product.name
-      this.form.description = this.product.description
-      this.form.stock = this.product.stock
-      this.form.weight = this.product.weight
-      this.form.stock = this.product.stock
-      this.form.sku = this.product.sku
-      this.form.isbn = this.product.isbn
-      this.form.price = this.product.price
-      this.form.discount = this.product.discount
-      this.form.collection_id = this.product.collection_id
-      this.form.media_library = this.product.media_library
-      this.showVariation = this.product.variant && this.product.variant.length > 0
-
-      // commit the variations to store
-      if (this.showVariation) {
-        this.$store.commit('product/setVariation', this.product.variant)
-        this.$store.commit(
-          'product/setVariationInventory',
-          this.product.variant_inventory
-        )
-      }
-
-      // Set page title
-      this.$store.commit('app/setTitle', this.form.name)
-    },
-    isSelectedCollection(index, collectionId) {
-      if (this.collections && this.collections[index].id === collectionId) {
-        return true
-      } else {
-        return false
-      }
-    },
+    }
   },
 }
 </script>
 
 <router>
 {
-  name: 'product-single'
+  name: 'product-new'
 }
 </router>

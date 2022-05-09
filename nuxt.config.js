@@ -32,8 +32,21 @@ export default {
       ssr: false,
     },
     {
-      src: '~/plugins/form.js'
-    }
+      src: '~/plugins/form.js',
+      ssr: true,
+    },
+    {
+      src: '~/plugins/filters.js',
+      ssr: true,
+    },
+    {
+      src: '~/plugins/vue-trix.js',
+      ssr: false,
+    },
+    {
+      src: '~/plugins/vue-notification.js',
+      ssr: false
+    },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -46,6 +59,7 @@ export default {
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
     '@nuxtjs/router-extras',
+    '@nuxtjs/moment'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -74,17 +88,18 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     vendor: ['@johmun/vue-tags-input'],
+    transpile: ['lodash-es']
   },
 
   router: {
-    middleware: ['auth']
+    middleware: ['auth', 'store']
   },
   auth: {
     // includeNodeModules: true,
     resetOnError: true,
     cookie: {
       options: {
-        expires: 200
+        expires: 12000
       }
     },
     strategies: {

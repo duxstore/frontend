@@ -3,14 +3,14 @@
     <!-- TODO: When a product that is loaded already has variations, use the data to populate this area -->
     <span class="text-muted">Separate items with a comma (,)</span>
     <div
-      v-for="(item, index) in variations"
+      v-for="(item, index) in variants"
       :key="'variation-' + index"
       class="flex flex-row w-full items-center justify-between my-4"
     >
       <select v-model="item.type" class="max-h-10 card w-2/12">
         <option
-          v-for="(type, index) in types"
-          :key="index"
+          v-for="(type, i) in types"
+          :key="i"
           :disabled="!type.status"
           :value="type.name"
         >
@@ -18,14 +18,14 @@
         </option>
       </select>
       <vue-tags-input
-        v-model="item.values"
+        v-model="item.variant"
         class="card w-full"
         :separators="[';', ',']"
         :save-on-key="[13, 188, ';', ' ']"
         :add-on-key="[13, 188]"
-        :tags="item.tags"
+        :tags="item.values"
         @blur="saveToStore"
-        @tags-changed="(newTags) => (item.tags = newTags)"
+        @tags-changed="(newTags) => setTags(newTags, item)"
       />
       <button
         class="bg-gray-100 font-body h-6 hover:bg-red-400 hover:text-white rounded-full text-center w-6"
@@ -38,11 +38,13 @@
     <button v-if="variations.length < 4" @click.prevent="addVariation">
       Add more
     </button>
-    <variation-table class="my-10" :variations="variations"></variation-table>
+    <variation-table class="my-10" :variations="variations" :inventory="inventory"></variation-table>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { cloneDeep } from 'lodash-es'
 import VariationTable from '@/components/Product/VariationTable.vue'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -52,53 +54,87 @@ export default {
   },
   data() {
     return {
+      variants: [],
       types: [
         { name: 'size', status: true },
         { name: 'color', status: true },
         { name: 'material', status: true },
         { name: 'type', status: true },
-      ],
-      variations: [
-        {
-          values: '',
-          tags: [],
-          type: 'size',
-        },
-      ],
+      ]
     }
   },
+  computed: {
+    ...mapGetters('product', ['variations', 'inventory']),
+    productId () {
+      return this.$route.params.id
+    }
+  },
+  mounted() {
+    // Copy the contents of variations this way
+    // to avoid copying vuex properties along
+    // so we can use it for v-model without vuex nagging
+    if(this.variations.length > 0) {
+      this.$store.commit('product/addTmpVariantFields')
+      this.variants = cloneDeep(this.variations)
+    } else {
+      this.$store.commit('product/addFirstVariation', this.productId)
+      this.variants = cloneDeep(this.variations)
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(this.variations, this.variants)
+  },
   methods: {
+    setTags(tags, item) {
+      item.values = []
+      // eslint-disable-next-line no-console
+      console.log('TAGS: ', tags, 'ITEM: ', item)
+
+      tags.map(tag => {
+        item.values.push(tag.text)
+        return true
+      })
+    },
     saveToStore() {
       // this method helps us to clean the variations of
       // any extra meta data which will not be useful for
       // the backend
       const localVariations = []
 
-      this.variations.forEach((variation) => {
+      this.variants.map((variation) => {
         const type = variation.type
-        const tags = variation.tags.map((tag) => tag.text)
-        localVariations.push({ type, tags })
+        const values = variation.values
+        const variant = ''
+        // eslint-disable-next-line camelcase
+        const product_id = this.$route.params.id
+        // eslint-disable-next-line camelcase
+        return localVariations.push({ type, values, variant, product_id })
       })
 
       this.$store.commit('product/setVariation', localVariations)
     },
     addVariation(e) {
-      e.preventDefault()
-      this.variations.map((variation, index) => {
+      // Disable the already selection variant type
+      this.variants.map((variation, index) => {
         if (this.types[index].name === variation.type) {
           this.types[index].status = false
           return false
         }
         return false
       })
-      this.variations.push({ values: '', type: '', tags: [] })
-      // commit to store
-      this.saveToStore()
+
+      this.variants.push({
+        variant: '',
+        values: [],
+        type: '',
+        product_id: this.$route.params.id
+      })
     },
     remove(index) {
-      this.variations = this.variations.splice(index, 1)
       // Remove item from store
-      this.$store.dispatch('product/removeVariation', this.variations)
+      this.$store.commit('product/removeVariation', index)
+      // Remove item from the local copy
+      this.variants.splice(index, 1)
     },
   },
 }

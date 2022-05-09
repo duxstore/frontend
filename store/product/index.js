@@ -6,8 +6,8 @@ const state = () => ({
   error: null,
   // used when editing/creating a product
   variation: {
-    variations: null,
-    inventory: null,
+    variations: [],
+    inventory: [],
   },
 })
 
@@ -21,11 +21,43 @@ const mutations = {
   setError(state, error) {
     state.error = error
   },
+  addTmpVariantFields(state) {
+    state.variation.variations.map(v => {
+      v.variant = ''
+      return true
+    })
+  },
+  addFirstVariation(state, productId) {
+    state.variation.variations.push({
+      type: 'size',
+      values: [],
+      variant: '',
+      product_id: productId,
+    })
+  },
   setVariation(state, variation) {
     state.variation.variations = variation
   },
   setVariationInventory(state, inventory) {
     state.variation.inventory = inventory
+  },
+  addVariation(state, variation) {
+    state.variation.variations.push(variation)
+  },
+  addInventoryToVariation(state, inventory) {
+    // eslint-disable-next-line no-console
+    console.log(state, state.variation, inventory)
+    state.variation.inventory.push(inventory)
+  },
+  updateInventory(state, item) {
+    // eslint-disable-next-line no-console
+    console.log(state, item)
+  },
+  setProductMedia (state, url) {
+    state.product.media_library.push(url)
+  },
+  removeVariation(state, variationIndex) {
+    state.variation.variations.splice(variationIndex, 1)
   },
 }
 
@@ -37,7 +69,10 @@ const getters = {
     return state.product
   },
   variations: (state) => {
-    return state.variation
+    return state.variation.variations
+  },
+  inventory: (state) => {
+    return state.variation.inventory
   },
 }
 
@@ -68,11 +103,7 @@ const actions = {
       .catch((err) => {
         commit('setError', err)
       })
-  },
-
-  removeVariation({ state }, variationIndex) {
-    state.variation.splice(variationIndex, 1)
-  },
+  }
 }
 
 export default {

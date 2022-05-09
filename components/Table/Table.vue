@@ -66,9 +66,8 @@
                   class="px-6 py-4 whitespace-nowrap"
                 >
                   <slot :name="heading.key" :[heading.key]="item[heading.key]">
-                    <!-- Hacky way to get the singular path name. e.g: Orders -> Order -->
                     <nuxt-link
-                      :to="{ name: page, params: { id: item['id'] } }"
+                      :to="{ name: page, params: { id: item[routeKeyName] } }"
                     >
                       <div
                         v-if="heading.type && heading.type == 'money'"
@@ -79,8 +78,9 @@
                       <div
                         v-else-if="heading.type && heading.type == 'date'"
                         class="text-sm text-gray-900"
+                        :title="$moment(item[heading.key]).format('dddd, MMMM Do YYYY, h:mm:ss a')"
                       >
-                        {{ item[heading.key] | dateAgo }}
+                        {{ $moment(item[heading.key]).fromNow() }}
                       </div>
                       <div
                         v-else-if="heading.type && heading.type == 'status'"
@@ -103,6 +103,37 @@
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="pagination" class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+          <div class="flex-1 flex justify-between sm:hidden">
+            <nuxt-link :to="{query: {page: getPage(pagination.next_page_url)}}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"> Previous </nuxt-link>
+            <nuxt-link :to="{query: {page: getPage(pagination.prev_page_url)}}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"> Next </nuxt-link>
+          </div>
+          <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p class="text-sm text-gray-700">
+                Showing
+                <span class="font-medium">{{ pagination.from }}</span>
+                to
+                <span class="font-medium">{{ pagination.to }}</span>
+                of
+                <span class="font-medium">{{ pagination.total }}</span>
+                results
+              </p>
+            </div>
+            <div>
+              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <!-- Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" -->
+                <nuxt-link
+                  v-for="(link, i) in pagination.links" :key="i" :to=" !link.active ? {query: {page: getPage(link.url)}} : ''" aria-current="page"
+                  :class="link.active ? 'cursor-not-allowed z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium' : 'relative inline-flex items-center px-4 py-2 border text-sm font-medium'">
+                  {{ link.label }}
+                </nuxt-link>
+              </nav>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -140,9 +171,19 @@ export default {
       type: Array,
       default: () => []
     },
-    page: {
+    page: { // name of the page this resource should go to
       type: String,
       required: true
+    },
+    pagination: {
+      type: Object,
+      required: false,
+      default: () => {}
+    },
+    routeKeyName: {
+      type: String,
+      required: false,
+      default: 'id'
     }
   },
   data() {
@@ -161,7 +202,15 @@ export default {
     },
   },
   methods: {
-    onFiltered(value) {
+    getPage (url) {
+      if(!url) {
+        return
+      }
+      const link = new URL(url)
+      const page = link.searchParams.get('page')
+      return page
+    },
+    onFiltered (value) {
       // eslint-disable-next-line vue/no-mutating-props
       this.data = value
     },

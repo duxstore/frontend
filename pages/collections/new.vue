@@ -3,7 +3,8 @@
     <div class="flex flex-col space-y-4">
       <form
         class="flex flex-row space-x-4"
-        @submit.prevent="save"
+        @keyup="form.errors.clear()"
+        @submit.prevent="create"
       >
         <div class="w-full">
           <div class="card">
@@ -37,12 +38,12 @@
                 <label for="media" class="font-bold cursor-pointer"
                   >Media</label
                 >
-                <file-uploader :multiple="false" :existing-files="[form.media_url]" :endpoint="uploadEndpoint" @url="handleUrl"></file-uploader>
+                <file-uploader :multiple="false" :endpoint="uploadEndpoint" @url="handleUrl"></file-uploader>
               </div>
             </div>
           </div>
 
-          <button type="submit" :disabled="form.media_url.length === 0" class="btn-md btn-primary bg-blue-300">
+          <button type="submit" :disabled="form.media_url === null" class="btn-md btn-primary bg-blue-300">
             Save
           </button>
         </div>
@@ -56,7 +57,7 @@ import FileUploader from '@/components/Product/FileUploader.vue'
 import CollectionService from '~/services/CollectionService'
 export default {
   auth: true,
-  name: 'SingleCollection',
+  name: 'NewCollection',
   components: {
     FileUploader,
   },
@@ -66,42 +67,43 @@ export default {
       collection: [],
       form: this.$form({
         id: 0,
-        media_url: [],
+        media_url: null,
         description: null,
         hasAutomation: 0,
         name: null,
       })
     }
   },
-  async fetch () {
-    const result = await CollectionService.get(this.$nuxt.context.route.params.id)
-    this.form.id = result.id
-    this.form.media_url = result.media
-    this.form.description = result.description
-    this.form.hasAutomation = result.hasAutomation
-    this.form.name = result.name
-  },
   computed: {
     uploadEndpoint () {
       return `${this.$storeUrl}/collections/${this.form.id}/media`
     }
   },
+  mounted () {
+    this.init()
+  },
   methods: {
     handleUrl (url) {
       this.form.media_url = url
     },
-    save () {
+    create () {
       this.form.post('/collections')
       .then((result) => {
         this.$notify({
           type: 'success',
-          title: 'Collection updated successfully',
+          title: 'Collection created successfully',
           text: `Your collection ${this.form.name} has been created successfully`
         })
+        this.form.reset()
         console.log('Create submit: ', result)
       }).catch((err) => {
         console.log('Create submit: ', err)
       });
+    },
+    async init () {
+      // A dummy create, so we can have collection instance (esp. id)
+      this.collection = await CollectionService.create({init: true})
+      this.form.id = this.collection.id
     }
   },
 }
@@ -109,6 +111,6 @@ export default {
 
 <router>
 {
-  name: 'collection-single'
+  name: 'collection-new'
 }
 </router>

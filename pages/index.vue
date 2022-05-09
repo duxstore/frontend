@@ -76,6 +76,22 @@
         </card>
       </section>
     </div>
+    <!-- RIGHT SIDEBAR -->
+    <div class="flex flex-col h-screen items-center sticky top-10 px-1">
+      <Search />
+      <div id="sidebar" class="my-10 p-5 w-full flex flex-col">
+        <p class="font-heading text-center text-sm mb-5">
+          Good morning Samuel
+        </p>
+        <span class="block text-center text-gray-300"
+          >Your store activity</span
+        >
+        <h2 class="text-center text-3xl mb-5 font-heading font-extrabold">
+          ₦125,002.10
+        </h2>
+        <div class="card"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -84,6 +100,8 @@ import AnalyticsCards from '@/components/Analytics/Cards.vue'
 import Card from '@/components/Card.vue'
 import MostViewedProducts from '@/components/Home/MostViewedProducts.vue'
 import RecentOrders from '@/components/Home/RecentOrders.vue'
+import Search from '@/components/Search.vue'
+
 // import Dashboard from '../../src/services/Dashboard';
 
 export default {
@@ -93,6 +111,7 @@ export default {
     Card,
     MostViewedProducts,
     RecentOrders,
+    Search
   },
   layout: 'app',
   data() {

@@ -32,6 +32,7 @@
                 type="store"
                 class="outline-none w-full"
                 placeholder="Your store shortname"
+                disabled
               />
               <span>.shopbot.com</span>
             </div>
@@ -116,9 +117,10 @@ export default {
       form: this.$form({
         email: null,
         password: null,
-        store: null,
+        store: this.$storename,
         remember_me: null
       }),
+      store: this.$authStore
     }
   },
   computed: mapState({
@@ -136,6 +138,9 @@ export default {
       }).then((result) => {
         // Store the name of the store that was logged in to
         this.$auth.$storage.setUniversal('store', result.data.store)
+      })
+      .catch((err) => {
+        this.form.errors.record(err.response.data)
       })
     },
   },

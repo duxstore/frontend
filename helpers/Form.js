@@ -1,4 +1,3 @@
-import axios from 'axios'
 import Errors from './Error'
 
 class Form {
@@ -7,28 +6,10 @@ class Form {
    *
    * @param {object} data
    */
-  constructor(data) {
-    // set axios defaults
-    axios.defaults.headers.common.Accept = 'application/json'
-    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-    axios.defaults.withCredentials = true
-
-    this.baseURL = process.env.VUE_APP_API_BASE_URL
-
-    // console.log(this.baseURL)
-    // set app base URL
-    // const storeUrl = JSON.parse(window.localStorage.getItem('store'))
-
-    this.appBaseURL = this.baseURL
-
-    // if (!storeUrl) {
-    //   this.appBaseURL = this.baseURL
-    // } else {
-    //   const fullUrl = this.baseURL + '/store/' + storeUrl.shortname
-    //   this.appBaseURL = fullUrl
-    // }
-
+  constructor(data, axios, store) {
     this.originalData = data
+    this.axios = axios
+    this.store = store
 
     for (const field in data) {
       this[field] = data[field]
@@ -89,6 +70,15 @@ class Form {
   }
 
   /**
+   * Send a GET request to the given URL.
+   * .
+   * @param {string} url
+   */
+  get(url) {
+      return this.axios.get(url)
+  }
+
+  /**
    * Send a DELETE request to the given URL.
    * .
    * @param {string} url
@@ -103,7 +93,7 @@ class Form {
    */
   login() {
     return new Promise((resolve, reject) => {
-      axios
+      this.axios
         .post(this.baseURL + '/login', this.data())
         .then((response) => {
           this.onSuccess(response.data)
@@ -124,7 +114,7 @@ class Form {
    */
   submit(requestType, url, params = null) {
     return new Promise((resolve, reject) => {
-      axios[requestType](this.appBaseURL + url, this.data(), {
+      this.axios[requestType]('/store/' + this.store + url, this.data(), {
         params,
       })
         .then((response) => {
