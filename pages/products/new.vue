@@ -264,6 +264,9 @@ export default {
       const { id } = await ProductService.create({step: 'init'})
       this.form.productId = id
     }
+
+    // Set page title
+    this.$store.commit('app/setTitle', 'Add new product')
   },
   beforeDestroy() {
     // Empty our variation data so it's not carried over to other products

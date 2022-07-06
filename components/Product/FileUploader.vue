@@ -10,6 +10,7 @@
       :files="existingFiles"
       @init="handleFilePondInit"
       @addfilestart="updateEndpoint"
+      @removefile="removefile"
     />
   </div>
 </template>
@@ -78,6 +79,7 @@ export default {
               if (this.$axios.isCancel(thrown)) {
                 // eslint-disable-next-line no-console
                 console.log('Request canceled', thrown.message)
+                this.$emit('url', '')
               } else {
                 // handle error
               }
@@ -87,6 +89,9 @@ export default {
           return {
             abort: () => {
               source.cancel('Operation cancelled by user')
+              this.$emit('url', '')
+              // eslint-disable-next-line no-console
+              console.log('File aborted canceled')
             },
           }
         },
@@ -103,6 +108,9 @@ export default {
   methods: {
     updateEndpoint() {
       return this.endpoint
+    },
+    removefile (e) {
+      this.$emit('url', '')
     },
     handleFilePondInit() {
       // eslint-disable-next-line no-console

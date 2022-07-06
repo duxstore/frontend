@@ -67,3 +67,8 @@ a.nav-items.text-sm.nuxt-link-exact-active.nuxt-link-active {
   background-color: #f1f1f1;
   border-radius: 5px;
 }
+
+button:disabled {
+  background-color: #F3F4F6;
+  cursor: not-allowed;
+}

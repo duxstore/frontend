@@ -1,5 +1,18 @@
 <template>
-  <div class="py-10">
+  <div class="py-5">
+    <!-- Product status, actions -->
+    <div class="flex flex-row items-center justify-between">
+      <span class="bg-green-300 px-3 py-1 rounded text-sm">Visible</span>
+      <button
+      class="bg-red-700 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 font-medium inline-flex items-center justify-center px-4 py-2 rounded-md shadow-sm text-sm text-white"
+      @click="doDelete"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        Delete
+      </button>
+    </div>
     <div class="flex flex-col justify-between space-y-4">
       <form-error
         :has-errors="form.errors.any()"
@@ -156,8 +169,28 @@
               <label for="status" class="font-bold cursor-pointer"
                 >Status</label
               >
+              <div class="bg-blue-100 flex flex-row h-10 items-center justify-between px-4 py-3 rounded">
+                <div class="flex flex-row items-center space-x-1">
+                  <span class="bg-blue-600 flex items-center p-1 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </span>
+                  <label>{{ form.status ? 'Published' : 'Draft' }}</label>
+                </div>
+                <span id="status" class="flex relative cursor-pointer">
+                  <span :class="`block absolute h-5 w-5 bg-white rounded-full transition-all`" :style="{ transform: `translateX(${transition === 'full' ? '100%' : '0%'})` }" aria-hidden="true"></span>
+                  <input v-model="form.status" class="z-10 appearance-none cursor-pointer focus:outline-none h-5 rounded-full w-9" :class="transition === '0' ? 'bg-gray-400' : 'bg-blue-600'" type="checkbox" role="switch" @click.exact="translate">
+                </span>
+              </div>
+            </div>
+            <div class="form-group flex flex-col p-3">
+              <label for="stastus" class="font-bold cursor-pointer"
+                >Status</label
+              >
               <select
-                id="status"
+                id="stastus"
                 v-model="form.status"
                 class="border card outline-none focus-within:bg-gray-50 bg-black"
               >
@@ -246,6 +279,7 @@ export default {
         media_library: []
       }),
       showVariation: false,
+      transition: 'full'
     }
   },
   computed: {
@@ -275,6 +309,12 @@ export default {
     this.$store.commit('product/setVariation', [])
   },
   methods: {
+    translate () {
+      this.transition = this.transition === '0' ? 'full' : '0'
+    },
+    doDelete () {
+      // delete product
+    },
     handleUrl (url) {
       this.$store.commit('product/setProductMedia', url)
     },
@@ -287,8 +327,9 @@ export default {
       this.$store.dispatch('product/save', this.form).then((result) => {
         this.$notify({
           type: 'success',
+          group: 'app',
           title: 'Your product was updated successfully',
-          text: `Your collection ${this.form.name} has been created successfully`
+          text: `Your product ${this.form.name} has been created successfully`
         })
         // eslint-disable-next-line no-console
         console.log('results from saving ', result)

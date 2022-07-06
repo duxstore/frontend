@@ -11,6 +11,11 @@ export default function ({ $auth, $axios}, inject) {
     Model.$http = $axios
     Model.$baseURL = $axios.defaults.baseURL + '/store/' +   $auth.$storage.getUniversal('store')
   } else {
-    $auth.logout() // endusre user is logged out
+    $auth.logout() // ensure user is logged out
   }
+
+  $axios.onResponse(response => {
+    // eslint-disable-next-line no-console
+    console.log('request status code is ', response.status, '\n', 'status text is ', response.statusText)
+  })
 }

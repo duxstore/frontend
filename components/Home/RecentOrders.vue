@@ -92,9 +92,11 @@ export default {
           // only notify about deliveries due in 3 or less days
           if (daysRemainingToDay <= 3) {
             // 1 day or 2 days. English bro
-            hasDeliveryDate.push(daysRemainingToDay)
+            return hasDeliveryDate.push(daysRemainingToDay)
           }
         }
+
+        return true
       })
 
       return hasDeliveryDate
@@ -105,7 +107,7 @@ export default {
   },
   methods: {
     async getRecentOrders() {
-      Dashboard.getRecentOrders()
+      await Dashboard.getRecentOrders()
         .then((response) => {
           this.orders = response
           this.count = response.length

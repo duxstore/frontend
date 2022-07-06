@@ -81,6 +81,9 @@ export default {
   },
   mounted () {
     this.init()
+
+    // Set page title
+    this.$store.commit('app/setTitle', 'New Collection')
   },
   methods: {
     handleUrl (url) {
@@ -95,9 +98,13 @@ export default {
           text: `Your collection ${this.form.name} has been created successfully`
         })
         this.form.reset()
-        console.log('Create submit: ', result)
       }).catch((err) => {
-        console.log('Create submit: ', err)
+        this.$notify({
+          group: 'app',
+          title: 'Something went wrong',
+          text: err.message
+        });
+        console.log('Error submitting: ', err)
       });
     },
     async init () {

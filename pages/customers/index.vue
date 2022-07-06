@@ -1,7 +1,7 @@
 <template>
   <div class="my-10">
     <nuxt-link
-      :to="{name: 'collection-new'}"
+      :to="{name: 'customer-new'}"
       class="-right-4 -top-0 absolute bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100 font-medium hover:bg-gray-50 inline-flex justify-center nuxt-link-active px-4 py-2 rounded-md shadow-sm text-gray-700 text-sm"
     >
       New
@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import CollectionService from '@/services/CollectionService'
 import DataTable from '@/components/Table/Table'
 
 export default {
@@ -83,16 +82,15 @@ export default {
     }
   },
   async fetch () {
-    const query = Object.assign({}, this.$nuxt.context.query, { paginate: true })
-    await CollectionService.index(query).then((result) => {
-      this.data = result
-    })
+    // const query = Object.assign({}, this.$nuxt.context.query, { paginate: true })
+    // await CollectionService.index(query).then((result) => {
+    //   this.data = result
+    // })
   },
   mounted () {
     // Set page title
-    this.$store.commit('app/setTitle', 'Collections')
+    this.$store.commit('app/setTitle', 'Customers')
   },
-
   methods: {
     stripTags (html) {
       if (process.client) {
@@ -106,6 +104,6 @@ export default {
 
 <router>
 {
-  name: 'collections'
+  name: 'customers'
 }
 </router>

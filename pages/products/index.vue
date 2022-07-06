@@ -99,7 +99,10 @@ export default {
       // eslint-disable-next-line no-console
       console.log('Fetched data for products page', this.data)
   },
-  mounted() {},
+  mounted() {
+    // Set page title
+    this.$store.commit('app/setTitle', 'Products')
+  },
 
   methods: {},
 }

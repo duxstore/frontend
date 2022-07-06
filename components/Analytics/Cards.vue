@@ -4,7 +4,7 @@
       <span class="text-muted text-gray-500 block mb-5 text-sm">Sales</span>
       <div>
         <span class="flex flex-row justify-between items-center">
-          <h5 v-money="sales_total"></h5>
+          <h5>{{sales_total | money}}</h5>
           <span class="text-muted text-gray-400 text-sm py-3"
             >Sales this week</span
           >
@@ -69,6 +69,7 @@ import Dashboard from '../../services/Dashboard'
 import Card from '../../components/Card'
 
 export default {
+  name: 'AnalyticsCards',
   components: {
     Card,
   },

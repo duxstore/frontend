@@ -130,5 +130,16 @@ export default {
     axios: {
       baseUrl: process.env.API_URL
     }
+  },
+
+  devServerHandlers: [],
+  watchers: {
+    // Temporary fix: https://github.com/nuxt-community/tailwindcss-module/issues/359
+    webpack: {
+      ignored: [
+        '**/*.eslintcache',
+        '**/.git/**'
+      ]
+    }
   }
 }

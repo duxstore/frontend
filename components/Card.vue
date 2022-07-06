@@ -11,8 +11,12 @@
 </template>
 
 <script>
+import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 export default {
-  // use the name prop to track cards
+  name: 'CardBox',
+  components: {
+    ClipLoader
+  },
   props: {
     size: {
       type: String,

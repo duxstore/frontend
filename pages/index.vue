@@ -121,6 +121,10 @@ export default {
   },
 
   computed: {},
+  mounted() {
+    // Set page title
+    this.$store.commit('app/setTitle', 'Dashboard')
+  },
 }
 </script>
 

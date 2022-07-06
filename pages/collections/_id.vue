@@ -1,5 +1,5 @@
 <template>
-  <div class="py-10">
+  <div v-if="!$fetchState.pending" class="py-10">
     <div class="flex flex-col space-y-4">
       <form
         class="flex flex-row space-x-4"
@@ -37,12 +37,12 @@
                 <label for="media" class="font-bold cursor-pointer"
                   >Media</label
                 >
-                <file-uploader :multiple="false" :existing-files="[form.media_url]" :endpoint="uploadEndpoint" @url="handleUrl"></file-uploader>
+                <file-uploader :multiple="false" :existing-files="[{source: form.media_url }]" :endpoint="uploadEndpoint" @url="handleUrl"></file-uploader>
               </div>
             </div>
           </div>
 
-          <button type="submit" :disabled="form.media_url.length === 0" class="btn-md btn-primary bg-blue-300">
+          <button type="submit" :disabled="$fetchState.pending || (form.media_url && form.media_url.length === 0)" class="btn-md btn-primary bg-blue-300">
             Save
           </button>
         </div>
@@ -80,12 +80,16 @@ export default {
     this.form.description = result.description
     this.form.hasAutomation = result.hasAutomation
     this.form.name = result.name
+
+    // Set page title
+    this.$store.commit('app/setTitle', this.form.name)
   },
   computed: {
     uploadEndpoint () {
       return `${this.$storeUrl}/collections/${this.form.id}/media`
     }
   },
+  mounted () {},
   methods: {
     handleUrl (url) {
       this.form.media_url = url
@@ -100,6 +104,11 @@ export default {
         })
         console.log('Create submit: ', result)
       }).catch((err) => {
+        this.$notify({
+          type: 'error',
+          title: 'An error has occurred',
+          text: err.message
+        })
         console.log('Create submit: ', err)
       });
     }

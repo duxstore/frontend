@@ -5,10 +5,10 @@
         class="py-2 h-screen align-middle inline-block min-w-full sm:px-6 lg:px-4"
       >
         <div
-          class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
+          class="shadow border-b border-gray-200 sm:rounded-lg"
         >
           <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+            <thead v-if="filters.length && options.length" class="bg-gray-50">
               <tr>
                 <th
                   scope="col"
@@ -65,7 +65,7 @@
                   :key="indices"
                   class="px-6 py-4 whitespace-nowrap"
                 >
-                  <slot :name="heading.key" :[heading.key]="item[heading.key]">
+                  <slot v-if="item[heading.key]" :name="heading.key" :[heading.key]="item[heading.key]">
                     <nuxt-link
                       :to="{ name: page, params: { id: item[routeKeyName] } }"
                     >
@@ -99,9 +99,52 @@
                       </div>
                     </nuxt-link>
                   </slot>
+                  <!--If the slot key doesn't exist, then give it the entire item as context-->
+                  <slot v-else :name="heading.key" :[heading.key]="item">
+                    <nuxt-link
+                      :to="{ name: page, params: { id: item[routeKeyName] } }"
+                    >
+                      <div
+                        v-if="heading.type && heading.type == 'money'"
+                        class="text-sm text-gray-900"
+                      >
+                        {{ item[heading.key] | money }}
+                      </div>
+                      <div
+                        v-else-if="heading.type && heading.type == 'date'"
+                        class="text-sm text-gray-900"
+                        :title="$moment(item[heading.key]).format('dddd, MMMM Do YYYY, h:mm:ss a')"
+                      >
+                        {{ $moment(item[heading.key]).fromNow() }}
+                      </div>
+                      <div
+                        v-else-if="heading.type && heading.type == 'status'"
+                        class="text-sm text-gray-900"
+                      >
+                        <span>{{ item[heading.key].toUpperCase() }}</span>
+                      </div>
+                      <div
+                        v-else
+                        class="text-sm text-gray-900"
+                      >
+                        {{ item[heading.key] }}
+                      </div>
+                    </nuxt-link>
+                  </slot>
                 </td>
               </tr>
             </tbody>
+            <tfoot v-if="footer" class="bg-gray-50">
+              <tr>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  :colspan="headings.length"
+                >
+                  <slot name="footer" :data="data"></slot>
+                </th>
+              </tr>
+            </tfoot>
           </table>
         </div>
 
@@ -150,6 +193,11 @@ export default {
     Menu
   },
   props: {
+    footer: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     // lenght must match the length of headings.
     // e.g :headings="[{colspan:1, content:'Type'},
     // {colspan: 1}, {colspan: 1, content: '<search/>'}]"
