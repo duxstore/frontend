@@ -1,5 +1,6 @@
 import Vue from "vue"
-import
+import index from '~/filters/index'
+
 const DisplayMixing = {
   created () {
     this.hello()
