@@ -2,12 +2,29 @@ import Orders from '@/models/Orders'
 import Customers from '@/models/Customers'
 
 const Dashboard = {
-  async getWeeklyStats() {
-    const response = await Orders.where('fulfilled', true)
-      .where('paid', true)
-      .whereIn('date_between', ['this week', 'today'])
-      .get()
-    return response
+  getWeeklyStats(data) {
+    return [
+      {
+        title: "Sales",
+        subtitle: "Sales this week",
+        filter: "money",
+        value: data.sales_sum,
+        message: `${data.sales_count} new orders`,
+        empty_message: "No new orders yet",
+        link: data.sales_link,
+        link_text: "View this week's orders >"
+      },
+      {
+        title: "Customers",
+        subtitle: "30% increase this week",
+        value: `+${data.customers_count}`,
+        message: "See all customers",
+        empty_message: "",
+        link: data.customers_link,
+        link_text: "View customers >"
+      },
+      // Analytics card
+    ]
   },
 
   async getWeeklyCustomers() {

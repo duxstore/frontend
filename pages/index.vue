@@ -2,7 +2,8 @@
   <div class="flex flex-row w-full">
     <div class="pt-10 w-full">
       <section id="intro">
-        <analytics-cards></analytics-cards>
+        <CardAnalytics :data="stats"/>
+        <!--<analytics-cards></analytics-cards>-->
       </section>
       <!-- To do section -->
       <section id="todo" class="flex flex-row justify-evenly space-x-2">
@@ -96,18 +97,15 @@
 </template>
 
 <script>
-import AnalyticsCards from '@/components/Analytics/Cards.vue'
 import Card from '@/components/Card.vue'
 import MostViewedProducts from '@/components/Home/MostViewedProducts.vue'
 import RecentOrders from '@/components/Home/RecentOrders.vue'
 import Search from '@/components/Search.vue'
-
-// import Dashboard from '../../src/services/Dashboard';
+import Dashboard from '~/services/Dashboard'
 
 export default {
   name: 'HomePage',
   components: {
-    AnalyticsCards,
     Card,
     MostViewedProducts,
     RecentOrders,
@@ -117,13 +115,25 @@ export default {
   data() {
     return {
       page: 'Home',
+      stats: []
     }
   },
-
   computed: {},
   mounted() {
     // Set page title
     this.$store.commit('app/setTitle', 'Dashboard')
+    this.statWidgets()
+  },
+  methods: {
+    async statWidgets() {
+      const statsUrl = `${this.$storeUrl}/dashboard/weekly-stats`
+      const { data } = await this.$axios.get(statsUrl)
+
+      this.stats = Dashboard.getWeeklyStats(data)
+
+      // eslint-disable-next-line no-console
+      console.log(data, this.stats)
+    }
   },
 }
 </script>
