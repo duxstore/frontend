@@ -82,7 +82,7 @@
       <Search />
       <div id="sidebar" class="my-10 p-5 w-full flex flex-col">
         <p class="font-heading text-center text-sm mb-5">
-          Good morning Samuel
+          {{ $auth.user.firstname | greet }}
         </p>
         <span class="block text-center text-gray-300"
           >Your store activity</span

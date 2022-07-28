@@ -12,7 +12,7 @@ const Dashboard = {
         message: `${data.sales_count} new orders`,
         empty_message: "No new orders yet",
         link: data.sales_link,
-        link_text: "View this week's orders >"
+        link_text: "This week's orders >"
       },
       {
         title: "Customers",
@@ -22,6 +22,16 @@ const Dashboard = {
         empty_message: "",
         link: data.customers_link,
         link_text: "View customers >"
+      },
+      {
+        title: "Visits",
+        subtitle: "Visits in the past week",
+        value: `+${30070}`,
+        message: "Store URL",
+        empty_message: "",
+        link: "https://michtolam.myduxstore.com",
+        link_text: "michtolam.myduxstore.com",
+        external_link: true
       },
       // Analytics card
     ]
