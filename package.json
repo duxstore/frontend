@@ -11,7 +11,7 @@
     "lint:prettier": "prettier --check .",
     "lint": "npm run lint:js && npm run lint:prettier",
     "lintfix": "prettier --write --list-different . && npm run lint:js -- --fix",
-    "dev": "nuxt --hostname ambience.commerce.test --port 50",
+    "dev": "nuxt --hostname duxstore.commerce.test --port 50",
     "dev:store": "nuxt --hostname shoes.commerce.test --port 30"
   },
   "dependencies": {

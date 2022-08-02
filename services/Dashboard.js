@@ -16,7 +16,7 @@ const Dashboard = {
       },
       {
         title: "Customers",
-        subtitle: "30% increase this week",
+        subtitle: "increase this week",
         value: `+${data.customers_count}`,
         message: "See all customers",
         empty_message: "",
@@ -26,14 +26,14 @@ const Dashboard = {
       {
         title: "Visits",
         subtitle: "Visits in the past week",
-        value: `+${30070}`,
+        value: `${data.visits}`,
         message: "Store URL",
         empty_message: "",
-        link: "https://michtolam.myduxstore.com",
-        link_text: "michtolam.myduxstore.com",
+        type: "visits",
+        link: `${data.store_url}`,
+        link_text: `${data.store_url}`,
         external_link: true
-      },
-      // Analytics card
+      }
     ]
   },
 
