@@ -26,7 +26,7 @@ const Dashboard = {
       {
         title: "Visits",
         subtitle: "Visits in the past week",
-        value: `${data.visits}`,
+        value: `${data.visits.views}`,
         message: "Store URL",
         empty_message: "",
         type: "visits",
