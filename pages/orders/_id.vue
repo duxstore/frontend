@@ -78,9 +78,11 @@
               <nuxt-link :to="{ name: 'product-single', params: {id: product.id}}" class="underline">
                 {{ product.name }}
               </nuxt-link>
-              <p v-for="variant in Object.keys(JSON.parse(product.pivot.variant))" :key="variant" class="capitalize">
-                <span class="text-muted">{{ variant }}:</span> {{ JSON.parse(product.pivot.variant)[variant] }}
-              </p>
+              <span v-if="product.pivot.variant">
+                <p v-for="variant in Object.keys(JSON.parse(product.pivot.variant))" :key="variant" class="capitalize">
+                  <span class="text-muted">{{ variant }}:</span> {{ JSON.parse(product.pivot.variant)[variant] }}
+                </p>
+              </span>
             </div>
           </div>
         </template>
@@ -157,10 +159,11 @@ export default {
   },
   async fetch () {
     const order = await OrderService.find(this.orderId)
+
     this.order = order
 
     // Set page title
-    this.$store.commit('app/setTitle', 'Order #' + this.order.id)
+    this.$store.commit('app/setTitle', 'Order #' + this.orderId)
   },
   computed: {
     orderId() {

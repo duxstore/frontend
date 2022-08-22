@@ -135,9 +135,12 @@ export default {
           remember_me: this.form.remember_me,
           store: this.form.store
         }
-      }).then((result) => {
+      }).then(async (result) => {
         // Store the name of the store that was logged in to
         this.$auth.$storage.setUniversal('store', result.data.store)
+        // Fetch store details
+        const response = await this.$axios.get(`/store/${this.form.store}`)
+        this.$store.commit('store/setStore', response.data.data)
       })
       .catch((err) => {
         this.form.errors.record(err.response.data)

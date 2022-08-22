@@ -12,6 +12,7 @@ export default function ({ $auth, $axios}, inject) {
     Model.$baseURL = $axios.defaults.baseURL + '/store/' +   $auth.$storage.getUniversal('store')
   } else {
     $auth.logout() // ensure user is logged out
+    // redirect to login page
   }
 
   $axios.onResponse(response => {
